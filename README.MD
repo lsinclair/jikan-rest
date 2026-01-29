@@ -56,6 +56,7 @@ For any additional help, join our [Discord server](http://discord.jikan.moe/).
 | Ruby       | [Jikan.rb](https://github.com/Zerocchi/jikan.rb) by Zerocchi |
 | Dart       | [jikan-dart](https://github.com/charafau/jikan-dart) by Rafal Wachol |
 | Kotlin     | [JikanKt](https://github.com/GSculerlor/JikanKt) by Ganedra Afrasya |
+| Clojure    | 🆕 **(v4)** [jikan-clj](https://github.com/AdaiasMagdiel/jikan-clj) by Adaías Magdiel |
 
 [Add your wrapper here](https://github.com/jikan-me/jikan-rest/edit/master/README.MD)
 
