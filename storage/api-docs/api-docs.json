@@ -4249,19 +4249,12 @@
                 ]
             },
             "anime_search_query_type": {
-                "description": "Available Anime types",
-                "type": "string",
-                "enum": [
-                    "tv",
-                    "movie",
-                    "ova",
-                    "special",
-                    "ona",
-                    "music",
-                    "cm",
-                    "pv",
-                    "tv_special"
-                ]
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/anime_types"
+                    }
+                ],
+                "description": "Available Anime types"
             },
             "characters_search_query_orderby": {
                 "description": "Available Character order_by properties",
@@ -5128,15 +5121,10 @@
                         "deprecated": true
                     },
                     "type": {
-                        "description": "Anime Type",
-                        "type": "string",
-                        "enum": [
-                            "TV",
-                            "OVA",
-                            "Movie",
-                            "Special",
-                            "ONA",
-                            "Music"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/anime_types"
+                            }
                         ],
                         "nullable": true
                     },
@@ -5431,15 +5419,10 @@
                         "deprecated": true
                     },
                     "type": {
-                        "description": "Anime Type",
-                        "type": "string",
-                        "enum": [
-                            "TV",
-                            "OVA",
-                            "Movie",
-                            "Special",
-                            "ONA",
-                            "Music"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/anime_types"
+                            }
                         ],
                         "nullable": true
                     },
@@ -5794,6 +5777,21 @@
                     }
                 },
                 "type": "object"
+            },
+            "anime_types": {
+                "description": "Anime Type",
+                "type": "string",
+                "enum": [
+                    "TV",
+                    "OVA",
+                    "Movie",
+                    "Special",
+                    "ONA",
+                    "Music",
+                    "CM",
+                    "PV",
+                    "TV Special"
+                ]
             },
             "character_anime": {
                 "description": "Character casted in anime",
