@@ -14,12 +14,12 @@ if [ -x "$(command -v git)" ]; then
   fi
 fi
 # set JIKAN_API_VERSION env var to "latest" or a tag which exists in the container registry to use the remote image
-# otherwise docker-compose will look for a locally builded image
+# otherwise docker compose will look for a locally builded image
 export _JIKAN_API_VERSION=${JIKAN_API_VERSION:-$SUBSTITUTE_VERSION}
 
 DOCKER_COMPOSE_PROJECT_NAME=jikan-api
 DOCKER_CMD="docker"
-DOCKER_COMPOSE_CMD="docker-compose"
+DOCKER_COMPOSE_CMD="docker compose"
 
 display_help() {
   echo "============================================================"
@@ -32,7 +32,7 @@ display_help() {
   echo "build-image            Build Image Locally"
   echo "start                  Start Jikan API (mongodb, typesense, redis, jikan-api workers)"
   echo "stop                   Stop Jikan API"
-  echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose)"
+  echo "validate-prereqs       Validate pre-reqs installed (docker, docker compose)"
   echo "execute-indexers       Execute the indexers, which will scrape and index data from MAL. (Notice: This can take days)"
   echo "index-incrementally    Executes the incremental indexers for each media type. (anime, manga)"
   echo ""
@@ -40,7 +40,7 @@ display_help() {
 
 validate_prereqs() {
   docker_exists=$(command -v docker)
-  docker_compose_exists=$(command -v docker-compose)
+  docker_compose_exists=$(command -v docker compose)
   podman_exists=$(command -v podman)
   podman_compose_exists=$(command -v podman-compose)
 
@@ -63,14 +63,14 @@ validate_prereqs() {
    fi
 
    if [ ! -x "$docker_compose_exists" ] && [ ! -x "$podman_compose_exists" ]; then
-       echo -e "'docker-compose' is not installed. \xE2\x9D\x8C"
+       echo -e "'docker compose' is not installed. \xE2\x9D\x8C"
        exit 1
     else
        echo -e "Docker compose is Installed. \xE2\x9C\x94"
     fi
 
     if [ -x "$docker_compose_exists" ]; then
-       DOCKER_COMPOSE_CMD="docker-compose"
+       DOCKER_COMPOSE_CMD="docker compose"
     elif [ -x "$podman_compose_exists" ]; then
        DOCKER_COMPOSE_CMD="podman-compose"
     else
