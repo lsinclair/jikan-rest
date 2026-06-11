@@ -1,10 +1,11 @@
+version: '3.8'
 volumes:
-  mongo-data: {}
-  redis-data: {}
-  typesense-data: {}
+  mongo-data: { }
+  redis-data: { }
+  typesense-data: { }
 
 networks:
-  jikan_network: {}
+  jikan_network: { }
 
 secrets:
   db_username:
@@ -22,7 +23,7 @@ secrets:
 
 services:
   jikan_rest:
-    image: "jikanme/jikan-rest:latest"
+    image: "docker.io/jikanme/jikan-rest:${_JIKAN_API_VERSION:-latest}"
     user: "${APP_UID:-10001}:${APP_GID:-10001}"
     networks:
       - jikan_network
@@ -36,14 +37,10 @@ services:
     env_file:
       - ./docker/config/.env.compose
     ports:
-      - "8000:8080/tcp"
+      - '8080:8080/tcp'
     hostname: jikan-rest-api
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'wget --spider -q "http://127.0.0.1:2114/health?plugin=http"',
-        ]
+      test: [ 'CMD-SHELL', 'wget --spider -q "http://127.0.0.1:2114/health?plugin=http"' ]
       interval: 2s
       timeout: 2s
     links:
@@ -95,9 +92,9 @@ services:
     volumes:
       - redis-data:/data:rw
     ports:
-      - "6379/tcp"
+      - '6379/tcp'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ 'CMD', 'redis-cli', 'ping' ]
       interval: 500ms
       timeout: 1s
 
@@ -119,7 +116,3 @@ services:
       - typesense-data:/data
     ports:
       - "8108/tcp"
-    healthcheck:
-      test: ["CMD", "echo", "healthy"]
-      interval: 10s
-      retries: 1
