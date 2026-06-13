@@ -8,13 +8,12 @@ if [ -x "$(command -v git)" ]; then
   # check if we have checked out a tag or not
   if ! git symbolic-ref HEAD &>/dev/null; then
     # if a tag is checked out then use the tag name as the version
-    SUBSTITUTE_VERSION=$(git describe --tags 2>/dev/null) \
-      || SUBSTITUTE_VERSION=$_JIKAN_API_VERSION
+    SUBSTITUTE_VERSION=$(git describe --tags 2>/dev/null || echo "$_JIKAN_API_VERSION")
   else
     # this is used when building locally
     SUBSTITUTE_VERSION=$(git describe --tags 2>/dev/null \
-      | sed -e "s/-[a-z0-9]\{8\}/-$(git rev-parse --short HEAD)/g") \
-      || SUBSTITUTE_VERSION=$_JIKAN_API_VERSION
+      | sed -e "s/-[a-z0-9]\{8\}/-$(git rev-parse --short HEAD)/g" \
+      || echo "$_JIKAN_API_VERSION")
   fi
 fi
 # set JIKAN_API_VERSION env var to "latest" or a tag which exists in the
@@ -119,7 +118,7 @@ ensure_secrets() {
   for secret_name in "${secrets[@]}"
   do
     if [ ! -f "$SECRETS_DIR/$secret_name.txt" ]; then
-      generated_secret=$(LC_ALL=c tr -dc 'A-Za-z0-9!()*+,\-;<=>_' </dev/urandom | head -c 16; echo)
+      generated_secret=$(LC_ALL=c tr -dc 'A-Za-z0-9!()*+,;<=>_-' </dev/urandom | head -c 16; echo)
       echo "$secret_name.txt not found, please provide a $secret_name [default is $generated_secret]:"
       # prompt for secret and save it in file
       read -r secret_value
