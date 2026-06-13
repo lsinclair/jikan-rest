@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -euo pipefail
 
 _JIKAN_API_VERSION=v4.0.0
 SUBSTITUTE_VERSION=$_JIKAN_API_VERSION
