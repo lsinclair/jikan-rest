@@ -92,7 +92,8 @@ $app->middleware($globalMiddleware);
 $app->routeMiddleware([
     'microcaching' => \App\Http\Middleware\MicroCaching::class,
     'source-health-monitor' => SourceHeartbeatMonitor::class,
-    'cache-ttl' => \App\Http\Middleware\EndpointCacheTtlMiddleware::class
+    'cache-ttl' => \App\Http\Middleware\EndpointCacheTtlMiddleware::class,
+    'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 ]);
 
 /*
@@ -176,6 +177,12 @@ $commonMiddleware = [
     'microcaching',
     'cache-ttl'
 ];
+
+if (env('THROTTLE', false)) {
+    $limit = env('THROTTLE_LIMIT', 60);
+    $period = env('THROTTLE_PERIOD', 1);
+    $commonMiddleware[] = "throttle:{$limit},{$period}";
+}
 
 
 $app->router->group(

@@ -102,6 +102,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'stderr' => [
+            'driver'  => 'monolog',
+            'handler' => StreamHandler::class,
+            'with'    => ['stream' => 'php://stderr'],
+            'level'   => env('LOG_LEVEL', 'warning'),
+        ],
+
         'null' => [
             'driver' => 'monolog',
             'handler' => \Monolog\Handler\NullHandler::class,

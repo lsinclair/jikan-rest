@@ -6,7 +6,7 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY --from=php-ext-installer /usr/bin/install-php-extensions /usr/local/bin/
 ENV COMPOSER_HOME="/tmp/composer"
 RUN set -x \
-    && install-php-extensions intl mbstring mongodb-stable redis opcache sockets pcntl \
+    && install-php-extensions intl mbstring mongodb-1.19.3 redis opcache sockets pcntl \
     # install xdebug (for testing with code coverage), but do not enable it
     && IPE_DONT_ENABLE=1 install-php-extensions xdebug-3.2.0
 
@@ -36,9 +36,8 @@ RUN	set -ex \
   && composer --version \
 	# create unpriviliged user
 	&& adduser --disabled-password --shell "/sbin/nologin" --home "/nonexistent" --no-create-home --uid "10001" --gecos "" "jikanapi" \
-	&& mkdir /app /var/run/rr \
-	&& chown -R jikanapi:jikanapi /app /var/run/rr /etc/supercronic/laravel \
-	&& chmod -R 777 /var/run/rr
+	&& mkdir -p /app \
+	&& chown -R jikanapi:jikanapi /app /etc/supercronic/laravel
 
 USER jikanapi:jikanapi
 

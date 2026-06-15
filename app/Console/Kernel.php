@@ -40,26 +40,26 @@ class Kernel extends ConsoleKernel
         // since they're airing, they're more prone to
         // have their information updated
         $schedule->command('indexer:anime-schedule')
-            ->daily();
+            ->daily()->onOneServer();
 
         $schedule->command('indexer:anime-current-season')
-            ->daily();
+            ->daily()->onOneServer();
 
         // Update common indexes daily
         $schedule->command('indexer:common')
-            ->daily();
+            ->daily()->onOneServer();
 
         $schedule->command('indexer:genres')
-            ->daily();
+            ->daily()->onOneServer();
 
         $schedule->command('indexer:producers')
-            ->daily();
+            ->daily()->onOneServer();
 
         $schedule->command('indexer:anime-sweep')
-            ->daily();
+            ->daily()->onOneServer();
 
         $schedule->command('indexer:manga-sweep')
-            ->daily();
+            ->daily()->onOneServer();
 
     }
 }

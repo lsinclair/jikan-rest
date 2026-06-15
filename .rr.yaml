@@ -20,7 +20,7 @@ server:
   # Worker starting command, with any required arguments.
   #
   # This option is required.
-  command: "php ./vendor/bin/rr-worker start --relay-dsn unix:///var/run/rr/rr-relay.sock"
+  command: "php ./vendor/bin/rr-worker start --relay-dsn unix:///tmp/rr-relay.sock"
 
   ## Environment variables for the worker processes.
   ##
@@ -32,7 +32,7 @@ server:
   # Worker relay can be: "pipes", TCP (eg.: tcp://127.0.0.1:6001), or socket (eg.: unix:///var/run/rr-relay.sock).
   #
   # Default: "pipes"
-  relay: "unix:///var/run/rr/rr-relay.sock"
+  relay: "unix:///tmp/rr-relay.sock"
 
   # Timeout for relay connection establishing (only for socket and TCP port relay).
   #
@@ -140,7 +140,7 @@ http:
     # Timeout for worker allocation. Zero means no limit.
     #
     # Default: 60s
-    allocate_timeout: 10s
+    allocate_timeout: 60s
 
     # Timeout for worker destroying before process killing. Zero means no limit.
     #

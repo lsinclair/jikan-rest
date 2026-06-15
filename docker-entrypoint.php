@@ -28,7 +28,15 @@ if (!file_exists(".env")) {
     $writer = new \MirazMac\DotEnv\Writer(__DIR__ . '/' . '.env');
 
     foreach ($safe_defaults as $env_var_name => $env_var_default) {
-        $writer->set("SCOUT_DRIVER", env($env_var_name, $env_var_default));
+        $value = env($env_var_name, $env_var_default);
+        if (is_bool($value)) {
+            $value = $value ? 'true' : 'false';
+        } elseif ($value === null) {
+            $value = '';
+        } else {
+            $value = (string) $value;
+        }
+        $writer->set($env_var_name, $value);
     }
     $writer->write();
 }

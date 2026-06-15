@@ -1,0 +1,169 @@
+name: jikan-rest
+region: lon
+
+features:
+  - buildpack-stack=ubuntu-22
+
+domains:
+  - domain: jikan.otakudaily.com
+    type: PRIMARY
+  - domain: jikan.otakudaily.co.uk
+    type: ALIAS
+
+ingress:
+  rules:
+    - component:
+        name: api
+      match:
+        path:
+          prefix: /
+
+services:
+  - name: api
+    dockerfile_path: Dockerfile
+    github:
+      repo: lsinclair/jikan-rest
+      branch: master
+      deploy_on_push: true
+    http_port: 8080
+    health_check:
+      http_path: /v4/health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      failure_threshold: 3
+    instance_count: 1
+    instance_size_slug: apps-s-2vcpu-4gb
+    envs:
+      # App
+      - key: APP_ENV
+        scope: RUN_AND_BUILD_TIME
+        value: production
+      - key: APP_DEBUG
+        scope: RUN_AND_BUILD_TIME
+        value: "false"
+      - key: APP_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: APP_URL
+        scope: RUN_AND_BUILD_TIME
+        value: https://jikan.otakudaily.com
+      - key: APP_VERSION
+        scope: RUN_AND_BUILD_TIME
+        value: "4.2.2"
+      # MongoDB — MONGODB_URL set as secret in DO console (mongodb+srv://...)
+      - key: MONGODB_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: DB_DATABASE
+        scope: RUN_AND_BUILD_TIME
+        value: jikan
+      # DO managed MongoDB bindings (TLS cert + connection URL)
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        value: ${jikan-mongodb.DATABASE_URL}
+      - key: CA_CERT
+        scope: RUN_TIME
+        value: ${jikan-mongodb.CA_CERT}
+      # Valkey — credentials set as secrets in DO console
+      - key: REDIS_HOST
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: REDIS_PORT
+        scope: RUN_AND_BUILD_TIME
+        value: "25061"
+      - key: REDIS_PASSWORD
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: REDIS_SCHEME
+        scope: RUN_AND_BUILD_TIME
+        value: tls
+      # Cache & Queue
+      - key: CACHE_DRIVER
+        scope: RUN_AND_BUILD_TIME
+        value: redis
+      - key: QUEUE_CONNECTION
+        scope: RUN_AND_BUILD_TIME
+        value: redis
+      - key: CACHING
+        scope: RUN_AND_BUILD_TIME
+        value: "true"
+      - key: DB_CACHING
+        scope: RUN_AND_BUILD_TIME
+        value: "true"
+      # Search — "null" uses Scout's NullEngine (no-op), disables indexing
+      - key: SCOUT_DRIVER
+        scope: RUN_AND_BUILD_TIME
+        value: none
+      # Logging
+      - key: LOG_CHANNEL
+        scope: RUN_AND_BUILD_TIME
+        value: stderr
+      - key: LOG_LEVEL
+        scope: RUN_AND_BUILD_TIME
+        value: warning
+      # Rate limiting (backed by Valkey)
+      - key: THROTTLE
+        scope: RUN_AND_BUILD_TIME
+        value: "true"
+      - key: THROTTLE_LIMIT
+        scope: RUN_AND_BUILD_TIME
+        value: "60"
+      - key: THROTTLE_PERIOD
+        scope: RUN_AND_BUILD_TIME
+        value: "1"
+      # Indexer scheduling (set to true to enable weekly full sweep)
+      - key: JIKAN_ENABLE_PERIODICAL_FULL_INDEXER
+        scope: RUN_TIME
+        value: "false"
+      # Misc
+      - key: APP_TIMEZONE
+        scope: RUN_AND_BUILD_TIME
+        value: UTC
+      - key: MAX_RESULTS_PER_PAGE
+        scope: RUN_AND_BUILD_TIME
+        value: "25"
+
+databases:
+  - cluster_name: jikan-mongodb
+    engine: MONGODB
+    name: jikan-mongodb
+    production: true
+    version: "8"
+  - cluster_name: jikan-valkey
+    engine: VALKEY
+    name: jikan-valkey
+    production: true
+    version: "8"
+
+jobs:
+  # Quick indexers — runs in minutes, safe to trigger any time
+  - name: indexer-common
+    dockerfile_path: Dockerfile
+    github:
+      repo: lsinclair/jikan-rest
+      branch: master
+      deploy_on_push: false
+    run_command: >-
+      php /app/artisan indexer:common &&
+      php /app/artisan indexer:genres &&
+      php /app/artisan indexer:producers &&
+      php /app/artisan indexer:anime-schedule &&
+      php /app/artisan indexer:anime-current-season
+    instance_count: 1
+    instance_size_slug: professional-xs
+    kind: UNSPECIFIED
+
+  # Full sweep — takes hours, run overnight
+  - name: indexer-sweep
+    dockerfile_path: Dockerfile
+    github:
+      repo: lsinclair/jikan-rest
+      branch: master
+      deploy_on_push: false
+    run_command: >-
+      php /app/artisan indexer:anime-sweep &&
+      php /app/artisan indexer:manga-sweep
+    instance_count: 1
+    instance_size_slug: professional-xs
+    kind: UNSPECIFIED
