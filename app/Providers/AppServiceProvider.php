@@ -357,7 +357,7 @@ class AppServiceProvider extends ServiceProvider
 
     private static function getSearchIndexDriver($app): string
     {
-        return $app["config"]->get("scout.driver");
+        return $app["config"]->get("scout.driver") ?? "null";
     }
 
     public static function servicesToWarm(): array

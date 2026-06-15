@@ -94,7 +94,7 @@ services:
       # Search — "null" uses Scout's NullEngine (no-op), disables indexing
       - key: SCOUT_DRIVER
         scope: RUN_AND_BUILD_TIME
-        value: none
+        value: "null"
       # Logging
       - key: LOG_CHANNEL
         scope: RUN_AND_BUILD_TIME
