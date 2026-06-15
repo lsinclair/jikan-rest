@@ -93,7 +93,7 @@ $app->routeMiddleware([
     'microcaching' => \App\Http\Middleware\MicroCaching::class,
     'source-health-monitor' => SourceHeartbeatMonitor::class,
     'cache-ttl' => \App\Http\Middleware\EndpointCacheTtlMiddleware::class,
-    'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    'throttle' => \App\Http\Middleware\ThrottleRequests::class,
 ]);
 
 /*
