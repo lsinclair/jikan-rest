@@ -144,15 +144,26 @@ jobs:
       repo: lsinclair/jikan-rest
       branch: master
       deploy_on_push: false
-    run_command: >-
-      php /app/artisan indexer:common &&
-      php /app/artisan indexer:genres &&
-      php /app/artisan indexer:producers &&
-      php /app/artisan indexer:anime-schedule &&
-      php /app/artisan indexer:anime-current-season
+    run_command: /bin/sh -c 'php /app/docker-entrypoint.php && php /app/artisan indexer:common && php /app/artisan indexer:genres && php /app/artisan indexer:producers && php /app/artisan indexer:anime-schedule && php /app/artisan indexer:anime-current-season'
     instance_count: 1
     instance_size_slug: professional-xs
     kind: UNSPECIFIED
+    envs:
+      - key: APP_ENV
+        scope: RUN_TIME
+        value: production
+      - key: APP_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: MONGODB_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_DATABASE
+        scope: RUN_TIME
+        value: jikan
+      - key: LOG_CHANNEL
+        scope: RUN_TIME
+        value: stderr
 
   # Full sweep — takes hours, run overnight
   - name: indexer-sweep
@@ -161,9 +172,23 @@ jobs:
       repo: lsinclair/jikan-rest
       branch: master
       deploy_on_push: false
-    run_command: >-
-      php /app/artisan indexer:anime-sweep &&
-      php /app/artisan indexer:manga-sweep
+    run_command: /bin/sh -c 'php /app/docker-entrypoint.php && php /app/artisan indexer:anime-sweep && php /app/artisan indexer:manga-sweep'
     instance_count: 1
     instance_size_slug: professional-xs
     kind: UNSPECIFIED
+    envs:
+      - key: APP_ENV
+        scope: RUN_TIME
+        value: production
+      - key: APP_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: MONGODB_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_DATABASE
+        scope: RUN_TIME
+        value: jikan
+      - key: LOG_CHANNEL
+        scope: RUN_TIME
+        value: stderr
