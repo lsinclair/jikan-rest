@@ -135,3 +135,97 @@ databases:
     name: jikan-valkey
     production: true
     version: "8"
+
+jobs:
+  # Full anime index — takes hours, trigger manually from DO console
+  - name: indexer-anime
+    dockerfile_path: Dockerfile
+    github:
+      repo: lsinclair/jikan-rest
+      branch: master
+      deploy_on_push: false
+    run_command: php /app/artisan indexer:anime
+    instance_count: 1
+    instance_size_slug: professional-xs
+    kind: UNSPECIFIED
+    envs:
+      - key: APP_ENV
+        scope: RUN_TIME
+        value: production
+      - key: APP_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: APP_URL
+        scope: RUN_TIME
+        value: https://jikan.otakudaily.com
+      - key: MONGODB_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_DATABASE
+        scope: RUN_TIME
+        value: jikan
+      - key: LOG_CHANNEL
+        scope: RUN_TIME
+        value: stderr
+
+  # Full manga index — takes hours, trigger manually from DO console
+  - name: indexer-manga
+    dockerfile_path: Dockerfile
+    github:
+      repo: lsinclair/jikan-rest
+      branch: master
+      deploy_on_push: false
+    run_command: php /app/artisan indexer:manga
+    instance_count: 1
+    instance_size_slug: professional-xs
+    kind: UNSPECIFIED
+    envs:
+      - key: APP_ENV
+        scope: RUN_TIME
+        value: production
+      - key: APP_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: APP_URL
+        scope: RUN_TIME
+        value: https://jikan.otakudaily.com
+      - key: MONGODB_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_DATABASE
+        scope: RUN_TIME
+        value: jikan
+      - key: LOG_CHANNEL
+        scope: RUN_TIME
+        value: stderr
+
+  # Quick indexers — runs in minutes, trigger manually from DO console
+  - name: indexer-common
+    dockerfile_path: Dockerfile
+    github:
+      repo: lsinclair/jikan-rest
+      branch: master
+      deploy_on_push: false
+    run_command: /bin/sh -c 'php /app/artisan indexer:common && php /app/artisan indexer:genres && php /app/artisan indexer:producers && php /app/artisan indexer:anime-schedule && php /app/artisan indexer:anime-current-season'
+    instance_count: 1
+    instance_size_slug: professional-xs
+    kind: UNSPECIFIED
+    envs:
+      - key: APP_ENV
+        scope: RUN_TIME
+        value: production
+      - key: APP_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: APP_URL
+        scope: RUN_TIME
+        value: https://jikan.otakudaily.com
+      - key: MONGODB_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: DB_DATABASE
+        scope: RUN_TIME
+        value: jikan
+      - key: LOG_CHANNEL
+        scope: RUN_TIME
+        value: stderr
