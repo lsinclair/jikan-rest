@@ -75,7 +75,11 @@ class AnimeScheduleIndexer extends Command
         foreach ($anime as $entry) {
             $url = env('APP_URL') . "/v4/anime/{$entry['mal_id']}";
 
-            file_get_contents($url);
+            try {
+                file_get_contents($url);
+            } catch (\Exception $e) {
+                echo "\nFAILED: {$entry['mal_id']} - {$e->getMessage()}\n";
+            }
             sleep(3); // prevent rate-limit
 
             echo "Updating {$i}/{$itemCount} \r";
