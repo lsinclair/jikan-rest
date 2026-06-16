@@ -35,6 +35,10 @@ class Insights
             return;
         }
 
+        if ($request->is('*/health')) {
+            return;
+        }
+
         // @todo scaling: implement as scheduled event if needed
         // Delete requests older than INSIGHTS_MAX_STORE
         DB::table('insights')

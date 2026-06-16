@@ -30,7 +30,7 @@ services:
       http_path: /v4/health
       initial_delay_seconds: 30
       period_seconds: 10
-      timeout_seconds: 5
+      timeout_seconds: 15
       failure_threshold: 3
     instance_count: 1
     instance_size_slug: apps-s-2vcpu-4gb
