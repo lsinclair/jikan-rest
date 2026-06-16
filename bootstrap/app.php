@@ -185,6 +185,10 @@ if (env('THROTTLE', false)) {
 }
 
 
+$app->router->get('/v4/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+
 $app->router->group(
     [
         'prefix' => 'v4',

@@ -1,8 +1,5 @@
 <?php
 
-$router->get('/health', function () {
-    return response()->json(['status' => 'ok']);
-});
 
 $router->get('/', function () use ($router) {
     return response()->json([
